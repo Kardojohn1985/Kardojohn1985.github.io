@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html lang="en" ng-app="foodApp">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Ordering App</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+    <style>
+        body {
+            background-color: red; /* Light red background */
+            color: white; /* White text color */
+            font-family: Arial, sans-serif;
+        }
+        .container { width: 80%; margin: auto; padding-top: 20px; display: flex; flex-wrap: wrap; }
+        .menu { width: 20%; padding: 10px; box-sizing: border-box; border: 1px solid #ddd; margin: 5px; }
+        .menu-item { margin-bottom: 20px; }
+        .button { margin: 0 5px; }
+        .total-price { margin-top: 20px; font-weight: bold; font-size: 18px; }
+        .get-location { margin-top: 10px; font-weight: bold; font-size: 18px; }
+        .form-group { margin-top: 10px; }
+        .form-column { width: 100%; margin-top: 20px; }
+        .form-group label, .form-group input, .pay-button {
+            font-weight: bold;
+            font-size: 18px;
+        }
+        .pay-button { margin-top: 20px; font-size: 20px; }
+        .basket { margin-top: 20px; font-size: 18px; }
+        .basket-header { font-weight: bold; font-size: 20px; }
+        .page-title { 
+            text-align: center; 
+            font-size: 24px; 
+            font-weight: bold; 
+            color: #ffffff; 
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body ng-controller="FoodController">
+    <div class="page-title">به سایت بوکان باربیکیو خوش آمدید</div>
+    
+    <div class="container">
+        <div class="menu" ng-repeat="menu in menus">
+            <h2>{{ menu.name }}</h2>
+            <button ng-click="selectMenu(menu.name)">انتخاب کنید {{ menu.name }}</button>
+            <div ng-show="menu.name === selectedMenu">
+                <div class="menu-item" ng-repeat="food in menu.items">
+                    <h3>{{ food.name }}</h3>
+                    <button class="button" ng-click="changeQuantity(menu.name, food.name, -1)">-</button>
+                    {{ selectedItems[food.name] || 0 }}
+                    <button class="button" ng-click="changeQuantity(menu.name, food.name, 1)">+</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="total-price">
+        Total Price: ${{ totalPrice }}
+    </div>
+    
+    <button class="get-location" ng-click="getLocation()">Get Location</button>
+    
+    <button ng-click="toggleBasket()">Basket</button>
+
+    <!-- Basket section -->
+    <div class="basket" ng-show="showBasket">
+        <div class="basket-header">Basket:</div>
+        <div ng-repeat="item in basketItems">
+            <p>{{ item.name }}: {{ item.quantity }} x ${{ item.price }} = ${{ item.total }}</p>
+        </div>
+        <div ng-if="basketItems.length === 0">Your basket is empty.</div>
+    </div>
+
+    <!-- Form and Pay button -->
+    <div class="form-column">
+        <div class="form-group">
+            <label for="address">Address:</label>
+            <input type="text" id="address" ng-model="order.address" required>
+        </div>
+        <div class="form-group">
+            <label for="phone_number">Phone Number:</label>
+            <input type="text" id="phone_number" ng-model="order.phone_number" required>
+        </div>
+        <button class="pay-button" ng-click="submitOrder()">Pay</button>
+    </div>
+
+    <script>
+        angular.module('foodApp', [])
+            .controller('FoodController', ['$scope', '$http', function($scope, $http) {
+                $scope.selectedMenu = ''; // Currently selected menu
+                $scope.showBasket = false; // Control basket visibility
+                
+                // Initialize menu items
+                $scope.menus = Array.from({ length: 15 }, (v, i) => ({
+                    name: i === 0 ? 'کباب' :
+                          i === 1 ?  'چنجه' :
+                          i === 2 ? 'آدانا کباب' :
+                          i === 3 ? 'رولت' :
+                          i === 4 ? 'چلوکباب ها' :
+                          i === 5 ? 'جوجه زعفرانی' :
+                          i === 6 ? 'جوجه حلزونی' :
+                          i === 7 ? 'جوجه لاری' :
+                          i === 8 ? 'جوجه مکزیکی' :
+                          i === 9 ? 'جوجه جنگلی' :
+                          i === 10 ? 'کتف و بال' :
+                          i === 11 ? 'جگرکی' :
+                          i === 12 ? 'فانتزی' :
+                          i === 13 ? 'پیش غذا' :
+                          i === 14 ? 'نوشیدنی‌' :
+                          i === 15 ? 'سبزیجات کبابی' :
+                          `Menu ${String.fromCharCode(66 + i)}`, // Default case
+                    items: Array.from({ length: 12 }, (v, j) => ({
+                        name: j === 0 ? 'کوبیده تک سیخ ۹۹۰۰۰' :
+                              j === 1 ? 'کوبیده دوسیخ ۱۹۹۰۰۰' :
+                              j === 2 ? 'چلوکوبیده تک سیخ ۱۶۵۰۰۰'
+                              j === 3 ? 'چلوکوبیده مخصوص ۳۳۹۰۰۰'
+                        
+                        price: j === 0 ? 99000 :
+                               j === 1 ? 199000 :
+                               j === 2 ? 165000 :
+                               j === 3 ? 339000 :
+                    }))
+                }));
+
+                $scope.selectedItems = {}; // Track selected items across all menus
+                $scope.order = {
+                    address: '',
+                    phone_number: '',
+                    latitude: null,
+                    longitude: null
+                };
+
+                $scope.basketItems = []; // Items in the basket
+
+                $scope.selectMenu = function(menuName) {
+                    $scope.selectedMenu = menuName;
+                };
+
+                $scope.changeQuantity = function(menuName, item, change) {
+                    if ($scope.selectedMenu === menuName) {
+                        let currentQuantity = $scope.selectedItems[item] || 0;
+                        let newQuantity = Math.max(0, currentQuantity + change);
+                        if (newQuantity === 0) {
+                            delete $scope.selectedItems[item];
+                        } else {
+                            $scope.selectedItems[item] = newQuantity;
+                        }
+                        $scope.calculateTotalPrice();
+                    }
+                };
+
+                $scope.calculateTotalPrice = function() {
+                    $scope.totalPrice = $scope.menus.reduce((total, menu) => {
+                        return total + menu.items.reduce((subtotal, food) => {
+                            if ($scope.selectedItems[food.name]) {
+                                return subtotal + ($scope.selectedItems[food.name] * food.price);
+                            }
+                            return subtotal;
+                        }, 0);
+                    }, 0);
+
+                    // Update basket items
+                    $scope.basketItems = $scope.menus.flatMap(menu => menu.items).map(food => ({
+                        name: food.name,
+                        quantity: $scope.selectedItems[food.name] || 0,
+                        price: food.price,
+                        total: ($scope.selectedItems[food.name] || 0) * food.price
+                    })).filter(item => item.quantity > 0);
+                };
+
+                $scope.toggleBasket = function() {
+                    $scope.showBasket = !$scope.showBasket;
+                };
+
+                $scope.getLocation = function() {
+                    if (navigator.geolocation) {
+                        navigator.geolocation.getCurrentPosition(
+                            function(position) {
+                                $scope.$apply(function() {
+                                    $scope.order.latitude = position.coords.latitude;
+                                    $scope.order.longitude = position.coords.longitude;
+                                    alert('Location retrieved successfully!');
+                                });
+                            },
+                            function(error) {
+                                switch(error.code) {
+                                    case error.PERMISSION_DENIED:
+                                        alert("User denied the request for Geolocation.");
+                                        break;
+                                    case error.POSITION_UNAVAILABLE:
+                                        alert("Location information is unavailable.");
+                                        break;
+                                    case error.TIMEOUT:
+                                        alert("The request to get user location timed out.");
+                                        break;
+                                    case error.UNKNOWN_ERROR:
+                                        alert("An unknown error occurred.");
+                                        break;
+                                }
+                            }
+                        );
+                    } else {
+                        alert('Geolocation is not supported by this browser.');
+                    }
+                };
+
+                $scope.submitOrder = function() {
+                    if (Object.keys($scope.selectedItems).length === 0) {
+                        alert('Please select at least one item.');
+                        return;
+                    }
+
+                    const orderData = {
+                        selectedItems: $scope.selectedItems,
+                        ...$scope.order
+                    };
+
+                    $http.post('/order', orderData, {
+                        headers: { 'Content-Type': 'application/json' }
+                    }).then(function(response) {
+                        alert('Order submitted successfully!');
+                        // Reset form
+                        $scope.selectedMenu = '';
+                        $scope.selectedItems = {};
+                        $scope.order = {
+                            address: '',
+                            phone_number: '',
+                            latitude: null,
+                            longitude: null
+                        };
+                        $scope.totalPrice = 0;
+                        $scope.showBasket = false; // Hide basket
+                    } , function(error) {
+                        alert
+                    });
+                };
+            }]);
+    </script>
+</body>
+</html>
+                  
+                  
+                  
+                      
