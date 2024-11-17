@@ -93,7 +93,7 @@
         color: black;
         font-size: 1.6rem;
         font-weight: bold;
-        font-family: 'Roboto';
+        font-family: 'Roboto' , sans-serif;
         margin-right: 1rem;
       }
 
@@ -141,7 +141,8 @@
     <h1 class="page-title">کباب کوبیده‌</h1>
     <div ng-repeat="food in foods" class="food-item">
       <span class="food-name">{{food.name}} :</span>
-      <span class="food-value" ng-class="{'food-value': food.value > 0}">{{food.value}}</span>
+      <span class="food-value">{{food.value}}</span>
+
       <button class="btn btn-decrease" ng-click="decreaseValue(food)">-</button>
       <button class="btn" ng-click="increaseValue(food)">+</button>
     </div>
