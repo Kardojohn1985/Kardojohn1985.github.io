@@ -1,0 +1,129 @@
+
+
+
+
+<!DOCTYPE html>
+<html ng-app="custom-webapp-ui" lang="fa">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+  <!-- Load FontAwesome for icons -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
+  <!-- Load the AngularJS Library -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      background-image: url('Images/b.jpg');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      background-repeat: no-repeat;
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    /* Title styling */
+    .page-title {
+      font-weight: bold;
+      color: teal;
+      text-align: center;
+      margin-top: 2rem;
+      margin-bottom: 1rem;
+      font-size: 3rem;
+    }
+
+    /* Icon container styling */
+    .icons-container {
+      display: flex;
+      justify-content: center;
+      gap: 2rem;
+      margin-top: 3rem;
+    }
+
+    /* Individual icon styling */
+    .icon {
+      font-size: 4rem;
+      cursor: pointer;
+      transition: color 0.3s ease;
+    }
+
+    /* Instagram icon - red */
+    .instagram-icon {
+      color: #e1306c; /* Instagram Red */
+    }
+
+    /* Telegram icon - blue */
+    .telegram-icon {
+      color: #0088cc; /* Telegram Blue */
+    }
+
+    /* Phone icon - green */
+    .phone-icon {
+      color: #34b7f1; /* Phone Green */
+    }
+
+    /* Location icon - orange */
+    .location-icon {
+      color: #ff5722; /* Location Orange */
+    }
+
+    .icon:hover {
+      opacity: 0.8;
+    }
+
+    /* Main button styling */
+    .main-button-container {
+      text-align: center;
+      margin: 2rem 0;
+    }
+
+    .main-button {
+      font-size: 1.5rem;
+      font-weight: bold;
+      background-color: teal;
+      color: white;
+      border: none;
+      padding: 0.8rem 2rem;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    .main-button:hover {
+      background-color: darkcyan;
+    }
+  </style>
+  <script>
+    angular.module("custom-webapp-ui", []).controller('CustomUIController', function CustomUIController() {
+      const mainButton = window.Telegram.WebApp.MainButton;
+      mainButton.text = "ثبت سفارش و بازگشت به منوی اصلی";
+      mainButton.enable();
+      mainButton.show();
+      mainButton.onClick(function () {
+        window.Telegram.WebApp.sendData("Returning to Telegram Bot");
+      });
+    });
+  </script>
+</head>
+<body ng-controller="CustomUIController">
+  <h1 class="page-title">Contact Us</h1>
+  <div class="icons-container">
+    <!-- Instagram Icon -->
+    <a href="https://www.instagram.com/boukan.bbq" target="_blank">
+      <i class="fab fa-instagram icon instagram-icon"></i> <!-- Instagram icon -->
+    </a>
+    <!-- Telegram Icon -->
+    <a href="https://t.me/Boukan_barbecue_bot " target="_blank">
+      <i class="fab fa-telegram-plane icon telegram-icon"></i> <!-- Telegram icon -->
+    </a>
+    <!-- Phone Icon -->
+    <a href="tel:+989961636538">
+      <i class="fas fa-phone-alt icon phone-icon"></i> <!-- FontAwesome Phone icon -->
+    </a>
+    <!-- Location Icon -->
+    <a href="https://www.google.com/maps?q=36.509702,46.191953" target="_blank">
+      <i class="fas fa-map-marker-alt icon location-icon"></i> <!-- Location icon -->
+    </a>
+  </div>
+  
+</body>
+</html>
