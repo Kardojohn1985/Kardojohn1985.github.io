@@ -31,7 +31,7 @@
       text-align: right;
       margin-top: 2rem;
       margin-bottom: 1rem;
-      font-size: 1rem;
+      font-size: 1.5rem;
     }
 
     /* Icon container styling */
@@ -97,7 +97,7 @@
   <script>
     angular.module("custom-webapp-ui", []).controller('CustomUIController', function CustomUIController() {
       const mainButton = window.Telegram.WebApp.MainButton;
-      mainButton.text = "ثبت سفارش و بازگشت به منوی اصلی";
+      mainButton.text = " بازگشت به منوی اصلی";
       mainButton.enable();
       mainButton.show();
       mainButton.onClick(function () {
