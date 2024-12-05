@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html ng-app="feedbackApp" lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1.0, user-scalable=no" />
+  <!-- Load Telegram WebApp Library -->
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <!-- Load AngularJS -->
+  <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.8.2/angular.min.js"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #f5f5f5, #d9e7ff);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+
+    h1 {
+      color: #333;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .poll-container {
+      background: white;
+      border-radius: 10px;
+      padding: 2rem;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 90%;
+      max-width: 600px;
+    }
+
+    .column-container {
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+    }
+
+    .column {
+      flex: 1;
+    }
+
+    .question {
+      font-size: 1.4rem;
+      margin-bottom: 1rem;
+    }
+
+    .option {
+      margin-bottom: 0.7rem;
+      font-size: 1.2rem;
+    }
+
+    .option input[type="radio"] {
+      width: 20px;
+      height: 20px;
+      margin-right: 10px;
+    }
+  </style>
+  <script>
+    angular.module("feedbackApp", []).controller("FeedbackController", function($scope) {
+      const mainButton = window.Telegram.WebApp.MainButton;
+
+      // Telegram Main Button Setup
+      mainButton.text = "ثبت سفارش و بازگشت به منوی اصلی";
+      mainButton.enable();
+      mainButton.show();
+
+      mainButton.onClick(function () {
+        const feedback = {
+          foodRating: $scope.foodRating,
+          serviceRating: $scope.serviceRating,
+        };
+        // Send feedback data to Telegram Bot
+        window.Telegram.WebApp.sendData(JSON.stringify(feedback));
+      });
+
+      // Feedback Options
+      $scope.foodRating = null;
+      $scope.serviceRating = null;
+    });
+  </script>
+</head>
+<body ng-controller="FeedbackController">
+  <h1>ارزیابی کیفیت غذا و سرویس دهی</h1>
+  <div class="poll-container">
+    <div class="column-container">
+      <!-- Food Quality Column -->
+      <div class="column">
+        <div class="question">کیفیت غذا</div>
+        <div class="option">
+          <input type="radio" name="foodRating" ng-model="foodRating" value="عالی"> عالی
+        </div>
+        <div class="option">
+          <input type="radio" name="foodRating" ng-model="foodRating" value="خوب"> خوب
+        </div>
+        <div class="option">
+          <input type="radio" name="foodRating" ng-model="foodRating" value="متوسط"> متوسط
+        </div>
+        <div class="option">
+          <input type="radio" name="foodRating" ng-model="foodRating" value="ضعیف"> ضعیف
+        </div>
+      </div>
+
+      <!-- Service Quality Column -->
+      <div class="column">
+        <div class="question">کیفیت سرویس‌دهی</div>
+        <div class="option">
+          <input type="radio" name="serviceRating" ng-model="serviceRating" value="عالی"> عالی
+        </div>
+        <div class="option">
+          <input type="radio" name="serviceRating" ng-model="serviceRating" value="خوب"> خوب
+        </div>
+        <div class="option">
+          <input type="radio" name="serviceRating" ng-model="serviceRating" value="متوسط"> متوسط
+        </div>
+        <div class="option">
+          <input type="radio" name="serviceRating" ng-model="serviceRating" value="ضعیف"> ضعیف
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
