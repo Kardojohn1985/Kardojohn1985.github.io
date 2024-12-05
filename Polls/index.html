@@ -72,8 +72,8 @@
 
       mainButton.onClick(function () {
         const feedback = {
-          foodRating: $scope.foodRating,
-          serviceRating: $scope.serviceRating,
+          "کیفیت غذا": $scope.foodRating,
+          "کیفیت سرویس ": $scope.serviceRating,
         };
         // Send feedback data to Telegram Bot
         window.Telegram.WebApp.sendData(JSON.stringify(feedback));
